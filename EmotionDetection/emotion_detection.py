@@ -12,9 +12,19 @@ def emotion_detector(text_to_analyze):
     myobj = { "raw_document": { "text": text_to_analyze } }
     # call the Library and get response
     response = requests.post(url, json = myobj, headers= header)
-    emotion_response = json.loads(response.text)
-    emotions = emotion_response["emotionPredictions"][0]['emotion']
-    dom_emotion = max(emotions, key = emotions.get)
-    emotions['dominant_emotion'] = dom_emotion
+    if response.status_code == 200:
+        emotion_response = json.loads(response.text)
+        emotions = emotion_response["emotionPredictions"][0]['emotion']
+        dom_emotion = max(emotions, key = emotions.get)
+        emotions['dominant_emotion'] = dom_emotion
+    elif response.status_code == 400:
+        emotions = {}
+        emotions['anger'] = None
+        emotions['disgust'] = None
+        emotions['fear'] = None
+        emotions['joy'] = None
+        emotions['sadness'] = None
+        emotions['dominant_emotion'] = None
+    
     # Return the dictionary of emotions and dominant emotion
     return emotions
